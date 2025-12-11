@@ -6,22 +6,21 @@ to the freq, but I can only access freq using the number? So custom fn to
 class Solution {
 public:
     vector<int> topKFrequent(vector<int>& nums, int k) {
-        auto custom_greater = [](pair<int, int>& p1, pair<int, int>& p2) {
-            return p1.second > p2.second;
-        };
-        priority_queue<pair<int, int>, vector<pair<int,int>>, decltype(custom_greater)> minH(custom_greater);
-        unordered_map<int, int> mpp;
-        for(int el: nums){
-            mpp[el]++;
+        unordered_map<int, int> freq;
+        for(int el:nums) freq[el]++;
+        
+        int n = nums.size();
+        vector<vector<int>> buckets(n+1);
+        for(auto p : freq) {
+            buckets[p.second].push_back(p.first);
         }
-        for(pair<int, int> p: mpp) {
-            minH.push({p.first, p.second});
-            if(minH.size() > k) minH.pop();
-        }
+        
         vector<int> ans;
-        while(minH.size()){
-            ans.push_back(minH.top().first);
-            minH.pop();
+        for(int i = n; i >= 0 && ans.size()< k; i--) {
+            for(int el : buckets[i]) {
+                ans.push_back(el);
+                if (ans.size() == k) break;
+            }
         }
         return ans;
     }
